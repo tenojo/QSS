@@ -2,24 +2,16 @@
 
 
 #Imports
-#Imports
 import os
-import random
-import transformers
+os.environ['HF_HOME'] = '/scratch/project_2000539/tapio/HF_cache/'
 import torch
-from transformers import AutoTokenizer, AutoModel
 from pprint import pprint
 import numpy as np
 from sklearn.preprocessing import normalize
 from sklearn.decomposition import PCA
 import time
 import faiss
-import os
-import sys
-import json
 from tqdm import tqdm
-import mauve
-
 
 
 
