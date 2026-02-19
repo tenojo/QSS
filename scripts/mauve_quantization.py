@@ -129,10 +129,15 @@ def CDOE(p, q, num_clusters,
         p_labels, bins=num_clusters,
         range=[0, num_clusters], density=False
     )[0]
+    q_bin_counts = np.histogram(
+        q_labels, bins=num_clusters,
+        range=[0, num_clusters], density=False
+    )[0]
     # Histograms without smoothing (used for the original MAUVE).
     p_hist = _normalize(p_bin_counts)
+    q_hist = _normalize(q_bin_counts)
     # Histograms with Krichevsky-Trofimov smoothing.
     # Used for MAUVE* suggested by by Pillutla et al. (JMLR 2023).
     p_hist_smoothed = _normalize(p_bin_counts + 0.5)
     #Originally returns values as they are and not a dict
-    return {'p_bin_counts':p_bin_counts, 'p_hist':p_hist, 'p_hist_smoothed':p_hist_smoothed, 'q2cluster':q2cluster, 'p2cluster':p2cluster}
+    return {'p_bin_counts':p_bin_counts, 'q_bin_counts':q_bin_counts, 'p_hist':p_hist, 'q_hist':q_hist, 'p_hist_smoothed':p_hist_smoothed, 'q2cluster':q2cluster, 'p2cluster':p2cluster}

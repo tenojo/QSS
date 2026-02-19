@@ -36,6 +36,8 @@ def metrics(text, tokenizer, model):
     ).to(model.device)
 
     assert encoded.input_ids.shape[0] == 1
+    if encoded.input_ids.shape[1] < 2:
+            return (float(-1), float(-1), float(-1))
 
     with torch.no_grad():
         output = model(**encoded, labels=encoded.input_ids)
@@ -54,6 +56,10 @@ def metrics(text, tokenizer, model):
     # if not torch.isclose(total_loss/seq_length, output.loss):
     #     warning(f'torch loss {float(total_loss/seq_length)} != '
     #             f'model loss {float(output.loss)}')
+    # Added some error prevention... There is apparently some case where seq_length is 0 -> division by 0????
+    # Will investigate at a later date how this is possible...
+    if seq_length == 0:
+        return (float(-1), float(-1), float(-1))
 
     loss = float(total_loss) / seq_length
     char_length = len(tokenizer.decode(shift_labels[0]))
@@ -81,14 +87,19 @@ def main(argv):
     with tqdm(range(len(ds)), desc="Calculating ppls...") as pbar:
         print('\n')
         for ex in ds:
-            loss, ppl, cppl = metrics(ex['text'], tokenizer, model)
-            print(f'Perplexity is {ppl}')
-            #print(f'{bn} mean loss: {loss:.2f}')
-            #print(f'{bn} mean ppl : {ppl:.2f}')
-            #print(f'{bn} mean cppl: {cppl:.2f}')
-            losses.append(loss)
-            ppls.append(ppl)
-            cppls.append(cppl)
+            try:
+                loss, ppl, cppl = metrics(ex['text'], tokenizer, model)
+                #print(f'Perplexity is {ppl}')
+                #print(f'{bn} mean loss: {loss:.2f}')
+                #print(f'{bn} mean ppl : {ppl:.2f}')
+                #print(f'{bn} mean cppl: {cppl:.2f}')
+                losses.append(loss)
+                ppls.append(ppl)
+                cppls.append(cppl)
+            except:
+                losses.append(float(-1))
+                ppls.append(float(-1))
+                cppls.append(float(-1))
             pbar.update(1)
     
     ds = ds.add_column('loss', losses)
