@@ -15,6 +15,8 @@ def main(cmd_args):
 
     ds = ds_s.format_datasets([human_ds_dict, clums_ds_dict])
 
+
+    
     print("Dataset formatted!")
 
     emb_model = cmd_args[0]
